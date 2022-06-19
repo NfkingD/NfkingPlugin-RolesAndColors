@@ -1,0 +1,11 @@
+main: com.nfkingd.nfkingplugin.roles_and_colors.Application
+name: RolesAndColors
+version: 1
+api-version: 1.19
+commands:
+  role:
+    description: Gives a player a role/color added to his name
+    usage: /<command>
+    permission: roles.admin
+    permission-message: You don't have the permission <permission>
+    default: false
