@@ -31,8 +31,13 @@ public class RoleEventListener implements Listener {
             var role = optionalRole.get();
             var displayName = player.getDisplayName();
             var message = event.getMessage();
+            var color = role.getColor();
 
-            event.setFormat("<" + displayName + ChatColor.WHITE + "> " + role.getColor() + message);
+            if (color.length() > 14) {
+                color = color.substring(0, color.length() - 2);
+            }
+
+            event.setFormat("<" + displayName + ChatColor.WHITE + "> " + color + message);
         }
     }
 }
