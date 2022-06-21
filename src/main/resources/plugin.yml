@@ -1,6 +1,6 @@
 main: com.nfkingd.nfkingplugin.roles_and_colors.Application
 name: RolesAndColors
-version: 1
+version: 1.0.1
 api-version: 1.19
 author: NfkingD
 commands:
