@@ -7,10 +7,10 @@
 Add roles and colors to names and chats
 
 ### Commands:
-/role set <name> <role>
-/role set <name> <role> <colorHexCode>
-/role set <name> <role> <enumConstantOfChatColor>
-/role set <name> <role> <colorHexCode> <enumConstantOfChatColor
+`/role set <name> <role>` <br>
+`/role set <name> <role> <colorHexCode>` <br>
+`/role set <name> <role> <enumConstantOfChatColor>` <br>
+`/role set <name> <role> <colorHexCode> <enumConstantOfChatColor` <br>
 
 ### Permissions:
 - To use the /role command you need to have the roles.admin permission
