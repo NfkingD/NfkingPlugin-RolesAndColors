@@ -1,11 +1,11 @@
-# RolesAndColors
+# **RolesAndColors**
 
-### Description:
+### **Description:**
 This plugin adds the feature to simply add a role to your name and to color your name and chat.
 
 You can download this plugin [here](https://www.curseforge.com/minecraft/bukkit-plugins/rolesandcolors)!
 
-### Commands:
+### **Commands:**
 
 **Add a role and color to your name and chat:** <br>
 `/role set <name> <role>` <br>
@@ -39,5 +39,5 @@ You can download this plugin [here](https://www.curseforge.com/minecraft/bukkit-
 **Remove color from player(WIP):** <br>
 `/color rm <name>`
 
-### Permissions:
+### **Permissions:**
 - To use the /role command you need to have the roles.admin permission
