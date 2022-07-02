@@ -3,7 +3,7 @@ package com.nfkingd.nfkingplugin.roles_and_colors.utils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import com.nfkingd.nfkingplugin.roles_and_colors.dto.RoleDto;
+import com.nfkingd.nfkingplugin.roles_and_colors.dto.PlayerRoleDto;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class RolesJsonUtil {
 
-    public static void savePlayerRoleToJson(RoleDto newRole) {
+    public static void savePlayerRoleToJson(PlayerRoleDto newRole) {
         var roles = getPalyerRolesFromJson();
 
         if (roles != null) {
@@ -45,8 +45,8 @@ public class RolesJsonUtil {
         }
     }
 
-    public static List<RoleDto> getPalyerRolesFromJson() {
-        List<RoleDto> roles = new ArrayList<>();
+    public static List<PlayerRoleDto> getPalyerRolesFromJson() {
+        List<PlayerRoleDto> roles = new ArrayList<>();
 
         var gson = new Gson();
         try {
@@ -54,7 +54,7 @@ public class RolesJsonUtil {
 
             if (file.exists()) {
                 JsonReader reader = new JsonReader(new FileReader(file.getAbsolutePath()));
-                roles = gson.fromJson(reader, new TypeToken<List<RoleDto>>() {
+                roles = gson.fromJson(reader, new TypeToken<List<PlayerRoleDto>>() {
                 }.getType());
                 reader.close();
             }
@@ -65,8 +65,8 @@ public class RolesJsonUtil {
         return roles;
     }
 
-    public static Optional<RoleDto> getPlayerFromRoles(String playerName) {
-        List<RoleDto> roles = getPalyerRolesFromJson();
+    public static Optional<PlayerRoleDto> getPlayerFromRoles(String playerName) {
+        List<PlayerRoleDto> roles = getPalyerRolesFromJson();
 
         if (roles == null) {
             return Optional.empty();

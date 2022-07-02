@@ -1,6 +1,6 @@
 package com.nfkingd.nfkingplugin.roles_and_colors.commands;
 
-import com.nfkingd.nfkingplugin.roles_and_colors.dto.RoleDto;
+import com.nfkingd.nfkingplugin.roles_and_colors.dto.PlayerRoleDto;
 import com.nfkingd.nfkingplugin.roles_and_colors.utils.RolesJsonUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
@@ -135,7 +135,7 @@ public class RoleCommand implements CommandExecutor {
         player.setPlayerListName(formattedName);
         player.setDisplayName(formattedName);
 
-        var role = new RoleDto(player.getName(), player.getPlayerListName(), color);
+        var role = new PlayerRoleDto(player.getName(), player.getPlayerListName(), color);
         RolesJsonUtil.savePlayerRoleToJson(role);
     }
 }
