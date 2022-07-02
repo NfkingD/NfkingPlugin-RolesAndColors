@@ -103,17 +103,14 @@ public class RoleCommand implements CommandExecutor {
 
         if (optionalPlayerName.isPresent()) {
             var playerName = optionalPlayerName.get();
-
-            RolesJsonUtil.removeRoleFromPlayer(playerName);
-
             var optionalPlayer = getPlayer(playerName);
 
             if (optionalPlayer.isPresent()) {
                 var player = optionalPlayer.get();
-                var name = player.getName();
+                var newName = addRoleAndColorToName(color, role, playerName);
 
-                player.setPlayerListName(name);
-                player.setDisplayName(name);
+                player.setPlayerListName(newName);
+                player.setDisplayName(newName);
             }
         }
 
@@ -235,7 +232,7 @@ public class RoleCommand implements CommandExecutor {
         }
 
         var roleDto = optionalRoleDto.get();
-        var newName = roleDto.getColor() + role + " - " + playerName;
+        var newName = addRoleAndColorToName(roleDto.getColor(), role, playerName);
 
         var optionalPlayer = getPlayer(playerName);
 
@@ -314,5 +311,9 @@ public class RoleCommand implements CommandExecutor {
         return Bukkit.getServer().getOnlinePlayers().stream()
                 .filter(p -> p.getName().equals(playerName))
                 .findFirst();
+    }
+
+    private String addRoleAndColorToName(String color, String role, String name) {
+        return color + role + " - " + name;
     }
 }
