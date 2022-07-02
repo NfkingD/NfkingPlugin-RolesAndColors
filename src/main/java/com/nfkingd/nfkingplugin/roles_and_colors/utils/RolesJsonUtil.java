@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RolesJsonUtil {
 
@@ -30,15 +31,8 @@ public class RolesJsonUtil {
             roles.add(roleDto);
         }
 
-        try {
-            var gson = new Gson();
-            File file = new File("roles.json");
-            FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
-            gson.toJson(roles, fileWriter);
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        saveJson(roles, "roles.json");
+
         return true;
     }
 
@@ -102,15 +96,8 @@ public class RolesJsonUtil {
             playerRoles.add(playerRole);
         }
 
-        try {
-            var gson = new Gson();
-            File file = new File("player-roles.json");
-            FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
-            gson.toJson(playerRoles, fileWriter);
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        saveJson(playerRoles, "player-roles.json");
+
         return true;
     }
 
@@ -151,5 +138,37 @@ public class RolesJsonUtil {
         return roles.stream()
                 .filter(role -> role.getRole().equals(playerRole.getRole()))
                 .findFirst();
+    }
+
+    public static boolean removeRoleFromPlayer(String playerName) {
+        var playerRoles = getPlayerRolesFromJson();
+
+        var optionalPlayerRole = playerRoles.stream()
+                .filter(playerRole -> playerRole.getPlayerName().equals(playerName))
+                .findFirst();
+
+        if (optionalPlayerRole.isEmpty()) {
+            return false;
+        }
+
+        var newPlayerList = playerRoles.stream()
+                .filter(playerRole -> !playerRole.getPlayerName().equals(playerName))
+                .toList();
+
+        saveJson(newPlayerList, "player-roles.json");
+
+        return true;
+    }
+
+    private static void saveJson(List<?> list, String pathName) {
+        try {
+            var gson = new Gson();
+            File file = new File(pathName);
+            FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
+            gson.toJson(list, fileWriter);
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

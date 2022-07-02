@@ -35,6 +35,10 @@ public class RoleCommand implements CommandExecutor {
             return processAddCommand(commandSender, arguments);
         }
 
+        if (firstArgument.equals("rm")) {
+            return processRmCommand(commandSender, arguments);
+        }
+
         var message = "/role " + arguments[0] + " does not exist";
         sendErrorMessage(commandSender, message);
 
@@ -48,9 +52,8 @@ public class RoleCommand implements CommandExecutor {
             return true;
         }
 
-        var color = getColorFromArguments2(arguments, argumentsCount);
+        var color = getColorFromArguments(arguments, argumentsCount);
         var role = arguments[1];
-
         var roleAdded = addRole(role, color);
 
         if (!roleAdded) {
@@ -77,13 +80,50 @@ public class RoleCommand implements CommandExecutor {
 
         var player = optionalPlayer.get();
         var role = arguments[2];
-
         var roleAddedToPlayer = addPlayerToRole(player, role);
 
         if (!roleAddedToPlayer) {
             var message = "Role does not exist!";
             sendErrorMessage(commandSender, message);
         }
+
+        return true;
+    }
+
+    private boolean processRmCommand(CommandSender commandSender, String[] arguments) {
+        var argumentsCount = arguments.length;
+
+        if (sendErrorMessageForUnhandledArgumentCount(2, argumentsCount, commandSender)) {
+            return true;
+        }
+
+        var optionalPlayer = getPlayer(commandSender, arguments);
+
+        if (optionalPlayer.isEmpty()) {
+            sendErrorMessage(commandSender, "Player was not found");
+            return true;
+        }
+        var player = optionalPlayer.get();
+        var roleRemovedFromPlayer = removeRoleFromPlayer(player);
+
+        if (!roleRemovedFromPlayer) {
+            var message = "Player does not have a role!";
+            sendErrorMessage(commandSender, message);
+        }
+
+        return true;
+    }
+
+    private boolean removeRoleFromPlayer(Player player) {
+        var name = player.getName();
+        var roleRemovedFromPlayer = RolesJsonUtil.removeRoleFromPlayer(name);
+
+        if (!roleRemovedFromPlayer) {
+            return false;
+        }
+
+        player.setPlayerListName(name);
+        player.setDisplayName(name);
 
         return true;
     }
@@ -146,7 +186,7 @@ public class RoleCommand implements CommandExecutor {
         commandSender.sendMessage(ChatColor.DARK_RED + message);
     }
 
-    private String getColorFromArguments2(String[] arguments, int argumentsCount) {
+    private String getColorFromArguments(String[] arguments, int argumentsCount) {
         if (argumentsCount == 4) {
             return ChatColor.of(arguments[2]) + "" + org.bukkit.ChatColor.valueOf(arguments[3]);
         } else if (argumentsCount == 3) {
