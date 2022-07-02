@@ -19,7 +19,7 @@ You can download this plugin [here](https://www.curseforge.com/minecraft/bukkit-
 `/role edit <role> <enumConstantOfChatColor>` <br>
 `/role edit <role> <colorHexCode> <enumConstantOfChatColor>` <br>
 
-**Delete role(WIP):** <br>
+**Delete role:** <br>
 `/role delete <role>`
 
 **Add role to player:** <br>
