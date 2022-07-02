@@ -12,8 +12,8 @@ import java.util.Optional;
 
 public class RolesJsonUtil {
 
-    public static void saveRoleToJson(RoleDto newRole) {
-        var roles = getRolesFromJson();
+    public static void savePlayerRoleToJson(RoleDto newRole) {
+        var roles = getPalyerRolesFromJson();
 
         if (roles != null) {
             var hasPlayerRole = roles.stream()
@@ -36,7 +36,7 @@ public class RolesJsonUtil {
 
         try {
             var gson = new Gson();
-            File file = new File("roles.json");
+            File file = new File("PlayerRole.json");
             FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
             gson.toJson(roles, fileWriter);
             fileWriter.close();
@@ -45,12 +45,12 @@ public class RolesJsonUtil {
         }
     }
 
-    public static List<RoleDto> getRolesFromJson() {
+    public static List<RoleDto> getPalyerRolesFromJson() {
         List<RoleDto> roles = new ArrayList<>();
 
         var gson = new Gson();
         try {
-            File file = new File("roles.json");
+            File file = new File("PlayerRole.json");
 
             if (file.exists()) {
                 JsonReader reader = new JsonReader(new FileReader(file.getAbsolutePath()));
@@ -66,7 +66,7 @@ public class RolesJsonUtil {
     }
 
     public static Optional<RoleDto> getPlayerFromRoles(String playerName) {
-        List<RoleDto> roles = getRolesFromJson();
+        List<RoleDto> roles = getPalyerRolesFromJson();
 
         if (roles == null) {
             return Optional.empty();

@@ -136,6 +136,6 @@ public class RoleCommand implements CommandExecutor {
         player.setDisplayName(formattedName);
 
         var role = new RoleDto(player.getName(), player.getPlayerListName(), color);
-        RolesJsonUtil.saveRoleToJson(role);
+        RolesJsonUtil.savePlayerRoleToJson(role);
     }
 }
