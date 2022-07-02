@@ -13,19 +13,22 @@ public class RoleEventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         var player = event.getPlayer();
-        var optionalRole = RolesJsonUtil.getPlayerFromRoles(player.getName());
+        var optionalRole = RolesJsonUtil.getRoleForPlayer(player.getName());
 
         if (optionalRole.isPresent()) {
             var role = optionalRole.get();
-            player.setPlayerListName(role.getFormattedName());
-            player.setDisplayName(role.getFormattedName());
+            var oldName = player.getName();
+            var newName = role.getColor() + role.getRole() + " - " + oldName;
+
+            player.setPlayerListName(newName);
+            player.setDisplayName(newName);
         }
     }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         var player = event.getPlayer();
-        var optionalRole = RolesJsonUtil.getPlayerFromRoles(player.getName());
+        var optionalRole = RolesJsonUtil.getRoleForPlayer(player.getName());
 
         if (optionalRole.isPresent()) {
             var role = optionalRole.get();

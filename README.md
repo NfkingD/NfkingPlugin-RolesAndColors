@@ -7,28 +7,25 @@ You can download this plugin [here](https://www.curseforge.com/minecraft/bukkit-
 
 ### **Commands:**
 
-**Add a role and color to your name and chat:** <br>
-`/role set <name> <role>` <br>
-`/role set <name> <role> <colorHexCode>` <br>
-`/role set <name> <role> <enumConstantOfChatColor>` <br>
-`/role set <name> <role> <colorHexCode> <enumConstantOfChatColor>` <br>
-
-**Create role(WIP):** <br>
+**Create role:** <br>
 `/role create <role>` <br>
 `/role create <role> <colorHexCode>` <br>
 `/role create <role> <enumConstantOfChatColor>` <br>
 `/role create <role> <colorHexCode> <enumConstantOfChatColor>` <br>
 
-**Edit role(WIP):** <br>
+**Edit role:** <br>
 `/role edit <role>`<br>
 `/role edit <role> <colorHexCode>` <br>
 `/role edit <role> <enumConstantOfChatColor>` <br>
 `/role edit <role> <colorHexCode> <enumConstantOfChatColor>` <br>
 
-**Add role to player(WIP):** <br>
+**Delete role:** <br>
+`/role delete <role>`
+
+**Add role to player:** <br>
 `/role add <name> <role>`
 
-**Remove role from player(WIP):** <br>
+**Remove role from player:** <br>
 `/role rm <name>`
 
 **Set color of your name and chat(WIP):** <br>
