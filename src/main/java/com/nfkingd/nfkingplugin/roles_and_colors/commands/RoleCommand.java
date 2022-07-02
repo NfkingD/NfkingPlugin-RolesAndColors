@@ -1,6 +1,5 @@
 package com.nfkingd.nfkingplugin.roles_and_colors.commands;
 
-import com.nfkingd.nfkingplugin.roles_and_colors.dto.OldRoleDto;
 import com.nfkingd.nfkingplugin.roles_and_colors.dto.PlayerRole;
 import com.nfkingd.nfkingplugin.roles_and_colors.dto.RoleDto;
 import com.nfkingd.nfkingplugin.roles_and_colors.utils.RolesJsonUtil;
@@ -27,10 +26,6 @@ public class RoleCommand implements CommandExecutor {
         }
 
         var firstArgument = arguments[0];
-
-        if (firstArgument.equals("set")) {
-            return processSetCommand(commandSender, arguments);
-        }
 
         if (firstArgument.equals("create")) {
             return processCreateCommand(commandSender, arguments);
@@ -114,29 +109,6 @@ public class RoleCommand implements CommandExecutor {
         return true;
     }
 
-    private boolean processSetCommand(CommandSender commandSender, String[] arguments) {
-        var argumentsCount = arguments.length;
-
-        if (sendErrorMessageForUnhandledArgumentCount(3, 5, argumentsCount, commandSender)) {
-            return true;
-        }
-
-        var optionalPlayer = getPlayer(commandSender, arguments);
-
-        if (optionalPlayer.isEmpty()) {
-            sendErrorMessage(commandSender, "Player was not found");
-            return true;
-        }
-
-        var player = optionalPlayer.get();
-        var color = getColorFromArguments(arguments, argumentsCount);
-        var formattedName = color + arguments[2] + " - " + player.getName();
-
-        updatePlayerName(player, formattedName, color);
-
-        return true;
-    }
-
     private boolean sendErrorMessageForUnhandledArgumentCount(int requiredArgumentsCount, int argumentsCount
             , CommandSender commandSender) {
         return sendErrorMessageForUnhandledArgumentCount(requiredArgumentsCount, requiredArgumentsCount
@@ -198,29 +170,11 @@ public class RoleCommand implements CommandExecutor {
                 .findFirst();
     }
 
-    private String getColorFromArguments(String[] arguments, int argumentsCount) {
-        if (argumentsCount == 5) {
-            return ChatColor.of(arguments[3]) + "" + org.bukkit.ChatColor.valueOf(arguments[4]);
-        } else if (argumentsCount == 4) {
-            return handleHexaInputAndGetColorString(arguments[3]);
-        }
-
-        return ChatColor.WHITE + "";
-    }
-
     private String handleHexaInputAndGetColorString(String argument) {
         if (argument.charAt(0) == '#') {
             return ChatColor.of(argument) + "";
         }
 
         return org.bukkit.ChatColor.valueOf(argument) + "";
-    }
-
-    private void updatePlayerName(Player player, String formattedName, String color) {
-        player.setPlayerListName(formattedName);
-        player.setDisplayName(formattedName);
-
-        var role = new OldRoleDto(player.getName(), player.getPlayerListName(), color);
-        RolesJsonUtil.saveOldRoleToJson(role);
     }
 }
