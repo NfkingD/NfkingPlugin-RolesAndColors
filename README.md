@@ -13,7 +13,7 @@ You can download this plugin [here](https://www.curseforge.com/minecraft/bukkit-
 `/role create <role> <enumConstantOfChatColor>` <br>
 `/role create <role> <colorHexCode> <enumConstantOfChatColor>` <br>
 
-**Edit role(WIP):** <br>
+**Edit role:** <br>
 `/role edit <role>`<br>
 `/role edit <role> <colorHexCode>` <br>
 `/role edit <role> <enumConstantOfChatColor>` <br>
