@@ -1,16 +1,16 @@
 package com.nfkingd.nfkingplugin.roles_and_colors.dto;
 
-public class PlayerRoleDto {
+public class OldRoleDto {
 
     private String playerName;
     private String formattedName;
     private String color;
 
-    public PlayerRoleDto() {
+    public OldRoleDto() {
 
     }
 
-    public PlayerRoleDto(String playerName, String formattedName, String color) {
+    public OldRoleDto(String playerName, String formattedName, String color) {
         this.playerName = playerName;
         this.formattedName = formattedName;
         this.color = color;

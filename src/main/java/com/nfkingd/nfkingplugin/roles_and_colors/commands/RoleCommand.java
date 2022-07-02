@@ -1,6 +1,7 @@
 package com.nfkingd.nfkingplugin.roles_and_colors.commands;
 
-import com.nfkingd.nfkingplugin.roles_and_colors.dto.PlayerRoleDto;
+import com.nfkingd.nfkingplugin.roles_and_colors.dto.OldRoleDto;
+import com.nfkingd.nfkingplugin.roles_and_colors.dto.PlayerRole;
 import com.nfkingd.nfkingplugin.roles_and_colors.dto.RoleDto;
 import com.nfkingd.nfkingplugin.roles_and_colors.utils.RolesJsonUtil;
 import net.md_5.bungee.api.ChatColor;
@@ -35,6 +36,10 @@ public class RoleCommand implements CommandExecutor {
             return processCreateCommand(commandSender, arguments);
         }
 
+        if (firstArgument.equals("add")) {
+            return processAddCommand(commandSender, arguments);
+        }
+
         var message = "/role " + arguments[0] + " does not exist";
         sendErrorMessage(commandSender, message);
 
@@ -49,7 +54,7 @@ public class RoleCommand implements CommandExecutor {
         }
 
         var color = getColorFromArguments2(arguments, argumentsCount);
-        var role = color + arguments[1] + " - ";
+        var role = arguments[1];
 
         var roleAdded = addRole(role, color);
 
@@ -57,6 +62,54 @@ public class RoleCommand implements CommandExecutor {
             var message = "Role already exists!";
             sendErrorMessage(commandSender, message);
         }
+
+        return true;
+    }
+
+    private boolean processAddCommand(CommandSender commandSender, String[] arguments) {
+        var argumentsCount = arguments.length;
+
+        if (sendErrorMessageForUnhandledArgumentCount(3, argumentsCount, commandSender)) {
+            return true;
+        }
+
+        var optionalPlayer = getPlayer(commandSender, arguments);
+
+        if (optionalPlayer.isEmpty()) {
+            sendErrorMessage(commandSender, "Player was not found");
+            return true;
+        }
+
+        var player = optionalPlayer.get();
+        var role = arguments[2];
+
+        var roleAddedToPlayer = addPlayerToRole(player, role);
+
+        if (!roleAddedToPlayer) {
+            var message = "Role does not exist!";
+            sendErrorMessage(commandSender, message);
+        }
+
+        return true;
+    }
+
+    private boolean addPlayerToRole(Player player, String role) {
+        var oldName = player.getName();
+        var playerRole = new PlayerRole(oldName, role);
+
+        var roleAddedToPlayer = RolesJsonUtil.savePlayerRoleToJson(playerRole);
+        if (!roleAddedToPlayer) {
+            return false;
+        }
+        var optionalRoleDto = RolesJsonUtil.getRoleFromJson(role);
+        if (optionalRoleDto.isEmpty()) {
+            return false;
+        }
+        var roleDto = optionalRoleDto.get();
+        var newName = roleDto.getColor() + role + " - " + oldName;
+
+        player.setPlayerListName(newName);
+        player.setDisplayName(newName);
 
         return true;
     }
@@ -84,8 +137,14 @@ public class RoleCommand implements CommandExecutor {
         return true;
     }
 
-    private boolean sendErrorMessageForUnhandledArgumentCount(int minimalArgumentCount, int maximalArgumentCount,
-                                                              int argumentsCount, CommandSender commandSender) {
+    private boolean sendErrorMessageForUnhandledArgumentCount(int requiredArgumentsCount, int argumentsCount
+            , CommandSender commandSender) {
+        return sendErrorMessageForUnhandledArgumentCount(requiredArgumentsCount, requiredArgumentsCount
+                , argumentsCount, commandSender);
+    }
+
+    private boolean sendErrorMessageForUnhandledArgumentCount(int minimalArgumentCount, int maximalArgumentCount
+            , int argumentsCount, CommandSender commandSender) {
         if (argumentsCount < minimalArgumentCount) {
             return sendErrorMessageForMissingArguments(minimalArgumentCount, argumentsCount, commandSender);
         } else if (argumentsCount > maximalArgumentCount) {
@@ -117,7 +176,7 @@ public class RoleCommand implements CommandExecutor {
 
     private String getColorFromArguments2(String[] arguments, int argumentsCount) {
         if (argumentsCount == 4) {
-            return ChatColor.of(arguments[3]) + "" + org.bukkit.ChatColor.valueOf(arguments[4]);
+            return ChatColor.of(arguments[2]) + "" + org.bukkit.ChatColor.valueOf(arguments[3]);
         } else if (argumentsCount == 3) {
             return handleHexaInputAndGetColorString(arguments[2]);
         }
@@ -161,7 +220,7 @@ public class RoleCommand implements CommandExecutor {
         player.setPlayerListName(formattedName);
         player.setDisplayName(formattedName);
 
-        var role = new PlayerRoleDto(player.getName(), player.getPlayerListName(), color);
-        RolesJsonUtil.savePlayerRoleToJson(role);
+        var role = new OldRoleDto(player.getName(), player.getPlayerListName(), color);
+        RolesJsonUtil.saveOldRoleToJson(role);
     }
 }
