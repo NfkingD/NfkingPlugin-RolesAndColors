@@ -1,6 +1,7 @@
 package com.nfkingd.nfkingplugin.roles_and_colors.commands;
 
 import com.nfkingd.nfkingplugin.roles_and_colors.dto.PlayerRoleDto;
+import com.nfkingd.nfkingplugin.roles_and_colors.dto.RoleDto;
 import com.nfkingd.nfkingplugin.roles_and_colors.utils.RolesJsonUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
@@ -47,6 +48,15 @@ public class RoleCommand implements CommandExecutor {
             return true;
         }
 
+        var color = getColorFromArguments2(arguments, argumentsCount);
+        var role = color + arguments[1] + " - ";
+
+        var roleAdded = addRole(role, color);
+
+        if (!roleAdded) {
+            var message = "Role already exists!";
+            sendErrorMessage(commandSender, message);
+        }
 
         return true;
     }
@@ -105,6 +115,22 @@ public class RoleCommand implements CommandExecutor {
         commandSender.sendMessage(ChatColor.DARK_RED + message);
     }
 
+    private String getColorFromArguments2(String[] arguments, int argumentsCount) {
+        if (argumentsCount == 4) {
+            return ChatColor.of(arguments[3]) + "" + org.bukkit.ChatColor.valueOf(arguments[4]);
+        } else if (argumentsCount == 3) {
+            return handleHexaInputAndGetColorString(arguments[2]);
+        }
+
+        return ChatColor.WHITE + "";
+    }
+
+    private boolean addRole(String role, String color) {
+        var roleDto = new RoleDto(role, color);
+
+        return RolesJsonUtil.saveRoleToJson(roleDto);
+    }
+
     private Optional<? extends Player> getPlayer(CommandSender commandSender, String[] arguments) {
         return commandSender.getServer()
                 .getOnlinePlayers()
@@ -117,18 +143,18 @@ public class RoleCommand implements CommandExecutor {
         if (argumentsCount == 5) {
             return ChatColor.of(arguments[3]) + "" + org.bukkit.ChatColor.valueOf(arguments[4]);
         } else if (argumentsCount == 4) {
-            return handleInputAndGetColorString(arguments);
+            return handleHexaInputAndGetColorString(arguments[3]);
         }
 
         return ChatColor.WHITE + "";
     }
 
-    private String handleInputAndGetColorString(String[] arguments) {
-        if (arguments[3].charAt(0) == '#') {
-            return ChatColor.of(arguments[3]) + "";
+    private String handleHexaInputAndGetColorString(String argument) {
+        if (argument.charAt(0) == '#') {
+            return ChatColor.of(argument) + "";
         }
 
-        return org.bukkit.ChatColor.valueOf(arguments[3]) + "";
+        return org.bukkit.ChatColor.valueOf(argument) + "";
     }
 
     private void updatePlayerName(Player player, String formattedName, String color) {
