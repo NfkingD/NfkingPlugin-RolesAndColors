@@ -199,4 +199,23 @@ public class RolesJsonUtil {
 
         return playerRoles;
     }
+
+    public static Optional<RoleDto> getRoleForPlayer(String playerName) {
+        var playerRoles = getPlayerRolesFromJson();
+
+        var optionalPlayerRole = playerRoles.stream()
+                .filter(playerRole -> playerRole.getPlayerName().equals(playerName))
+                .findFirst();
+
+        if (optionalPlayerRole.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var playerRole = optionalPlayerRole.get();
+        var roles = getRolesFromJson();
+
+        return roles.stream()
+                .filter(role -> role.getRole().equals(playerRole.getRole()))
+                .findFirst();
+    }
 }

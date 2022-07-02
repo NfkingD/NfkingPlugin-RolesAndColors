@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class RoleEventListener implements Listener {
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onOldPlayerJoin(PlayerJoinEvent event) {
         var player = event.getPlayer();
         var optionalRole = RolesJsonUtil.getPlayerFromRoles(player.getName());
 
@@ -23,7 +23,7 @@ public class RoleEventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
+    public void onOldPlayerChat(AsyncPlayerChatEvent event) {
         var player = event.getPlayer();
         var optionalRole = RolesJsonUtil.getPlayerFromRoles(player.getName());
 
@@ -38,6 +38,21 @@ public class RoleEventListener implements Listener {
             }
 
             event.setFormat("<" + displayName + ChatColor.WHITE + "> " + color + message);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        var player = event.getPlayer();
+        var optionalRole = RolesJsonUtil.getRoleForPlayer(player.getName());
+
+        if (optionalRole.isPresent()) {
+            var role = optionalRole.get();
+            var oldName = player.getName();
+            var newName = role.getColor() + role.getRole() + " - " + oldName;
+
+            player.setPlayerListName(newName);
+            player.setDisplayName(newName);
         }
     }
 }
