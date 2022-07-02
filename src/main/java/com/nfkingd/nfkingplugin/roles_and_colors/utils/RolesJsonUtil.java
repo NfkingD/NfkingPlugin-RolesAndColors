@@ -13,6 +13,8 @@ import java.util.Optional;
 
 public class RolesJsonUtil {
 
+    private static String ROLES = "roles.json";
+
     public static boolean saveRoleToJson(RoleDto roleDto) {
         var roles = getRolesFromJson();
 
@@ -30,7 +32,7 @@ public class RolesJsonUtil {
             roles.add(roleDto);
         }
 
-        saveJson(roles, "roles.json");
+        saveJson(roles, ROLES);
 
         return true;
     }
@@ -40,7 +42,7 @@ public class RolesJsonUtil {
 
         var gson = new Gson();
         try {
-            File file = new File("roles.json");
+            File file = new File(ROLES);
 
             if (file.exists()) {
                 JsonReader reader = new JsonReader(new FileReader(file.getAbsolutePath()));
@@ -173,6 +175,25 @@ public class RolesJsonUtil {
         return Optional.of(optionalPlayerRole.get().getPlayerName());
     }
 
+    public static boolean editRole(RoleDto roleDto) {
+        var roles = getRolesFromJson();
+
+        var doesRoleExist = roles.stream()
+                        .anyMatch(r -> r.getRole().equals(roleDto.getRole()));
+
+        if (!doesRoleExist) {
+            return false;
+        }
+
+        roles.stream()
+                .filter(r -> r.getRole().equals(roleDto.getRole()))
+                .forEach(role -> role.setColor(roleDto.getColor()));
+
+        saveJson(roles, ROLES);
+
+        return true;
+    }
+
     public static boolean deleteRole(String role) {
         var roles = getRolesFromJson();
 
@@ -188,7 +209,7 @@ public class RolesJsonUtil {
                 .filter(r -> !r.getRole().equals(role))
                 .toList();
 
-        saveJson(newRoleList, "roles.json");
+        saveJson(newRoleList, ROLES);
 
         return true;
     }

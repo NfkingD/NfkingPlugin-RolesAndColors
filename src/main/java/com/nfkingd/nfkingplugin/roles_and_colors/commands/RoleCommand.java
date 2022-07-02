@@ -32,6 +32,10 @@ public class RoleCommand implements CommandExecutor {
             return processCreateCommand(commandSender, arguments);
         }
 
+        if (firstArgument.equals("edit")) {
+            return processEditCommand(commandSender, arguments);
+        }
+
         if (firstArgument.equals("delete")) {
             return processDeleteCommand(commandSender, arguments);
         }
@@ -59,11 +63,58 @@ public class RoleCommand implements CommandExecutor {
 
         var color = getColorFromArguments(arguments, argumentsCount);
         var role = arguments[1];
-        var roleAdded = addRole(role, color);
+        var roleCreated = createRole(role, color);
 
-        if (!roleAdded) {
+        if (!roleCreated) {
             var message = "Role already exists!";
             sendErrorMessage(commandSender, message);
+        }
+
+        return true;
+    }
+
+    private boolean processEditCommand(CommandSender commandSender, String[] arguments) {
+        var argumentsCount = arguments.length;
+
+        if (sendErrorMessageForUnhandledArgumentCount(2, 4, argumentsCount, commandSender)) {
+            return true;
+        }
+
+        var color = getColorFromArguments(arguments, argumentsCount);
+        var role = arguments[1];
+        var roleEdited = editRole(role, color);
+
+        if (!roleEdited) {
+            var message = "Role does not exist!";
+            sendErrorMessage(commandSender, message);
+        }
+
+        return true;
+    }
+
+    private boolean editRole(String role, String color) {
+        var roleDto = new RoleDto(role, color);
+        var optionalPlayerName = RolesJsonUtil.getPlayerFromRole(role);
+        var isRoleEdited = RolesJsonUtil.editRole(roleDto);
+
+        if (!isRoleEdited) {
+            return false;
+        }
+
+        if (optionalPlayerName.isPresent()) {
+            var playerName = optionalPlayerName.get();
+
+            RolesJsonUtil.removeRoleFromPlayer(playerName);
+
+            var optionalPlayer = getPlayer(playerName);
+
+            if (optionalPlayer.isPresent()) {
+                var player = optionalPlayer.get();
+                var name = player.getName();
+
+                player.setPlayerListName(name);
+                player.setDisplayName(name);
+            }
         }
 
         return true;
@@ -245,7 +296,7 @@ public class RoleCommand implements CommandExecutor {
         return ChatColor.WHITE + "";
     }
 
-    private boolean addRole(String role, String color) {
+    private boolean createRole(String role, String color) {
         var roleDto = new RoleDto(role, color);
 
         return RolesJsonUtil.saveRoleToJson(roleDto);
