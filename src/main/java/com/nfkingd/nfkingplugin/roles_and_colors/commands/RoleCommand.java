@@ -4,6 +4,7 @@ import com.nfkingd.nfkingplugin.roles_and_colors.dto.PlayerRole;
 import com.nfkingd.nfkingplugin.roles_and_colors.dto.RoleDto;
 import com.nfkingd.nfkingplugin.roles_and_colors.utils.RolesJsonUtil;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,6 +30,10 @@ public class RoleCommand implements CommandExecutor {
 
         if (firstArgument.equals("create")) {
             return processCreateCommand(commandSender, arguments);
+        }
+
+        if (firstArgument.equals("delete")) {
+            return processDeleteCommand(commandSender, arguments);
         }
 
         if (firstArgument.equals("add")) {
@@ -64,6 +69,51 @@ public class RoleCommand implements CommandExecutor {
         return true;
     }
 
+    private boolean processDeleteCommand(CommandSender commandSender, String[] arguments) {
+        var argumentsCount = arguments.length;
+
+        if (sendErrorMessageForUnhandledArgumentCount(2, argumentsCount, commandSender)) {
+            return true;
+        }
+
+        var role = arguments[1];
+        var roleDeleted = deleteRole(role);
+
+        if (!roleDeleted) {
+            var message = "Role could not be deleted!";
+            sendErrorMessage(commandSender, message);
+        }
+
+        return true;
+    }
+
+    private boolean deleteRole(String role) {
+        var optionalPlayerName = RolesJsonUtil.getPlayerFromRole(role);
+        var isRoleDeleted = RolesJsonUtil.deleteRole(role);
+
+        if (!isRoleDeleted) {
+            return false;
+        }
+
+        if (optionalPlayerName.isPresent()) {
+            var playerName = optionalPlayerName.get();
+
+            RolesJsonUtil.removeRoleFromPlayer(playerName);
+
+            var optionalPlayer = getPlayer(playerName);
+
+            if (optionalPlayer.isPresent()) {
+                var player = optionalPlayer.get();
+                var name = player.getName();
+
+                player.setPlayerListName(name);
+                player.setDisplayName(name);
+            }
+        }
+
+        return true;
+    }
+
     private boolean processAddCommand(CommandSender commandSender, String[] arguments) {
         var argumentsCount = arguments.length;
 
@@ -71,16 +121,9 @@ public class RoleCommand implements CommandExecutor {
             return true;
         }
 
-        var optionalPlayer = getPlayer(commandSender, arguments);
-
-        if (optionalPlayer.isEmpty()) {
-            sendErrorMessage(commandSender, "Player was not found");
-            return true;
-        }
-
-        var player = optionalPlayer.get();
+        var playerName = arguments[1];
         var role = arguments[2];
-        var roleAddedToPlayer = addPlayerToRole(player, role);
+        var roleAddedToPlayer = addPlayerToRole(playerName, role);
 
         if (!roleAddedToPlayer) {
             var message = "Role does not exist!";
@@ -97,14 +140,8 @@ public class RoleCommand implements CommandExecutor {
             return true;
         }
 
-        var optionalPlayer = getPlayer(commandSender, arguments);
-
-        if (optionalPlayer.isEmpty()) {
-            sendErrorMessage(commandSender, "Player was not found");
-            return true;
-        }
-        var player = optionalPlayer.get();
-        var roleRemovedFromPlayer = removeRoleFromPlayer(player);
+        var playerName = arguments[1];
+        var roleRemovedFromPlayer = removeRoleFromPlayer(playerName);
 
         if (!roleRemovedFromPlayer) {
             var message = "Player does not have a role!";
@@ -114,37 +151,49 @@ public class RoleCommand implements CommandExecutor {
         return true;
     }
 
-    private boolean removeRoleFromPlayer(Player player) {
-        var name = player.getName();
-        var roleRemovedFromPlayer = RolesJsonUtil.removeRoleFromPlayer(name);
+    private boolean removeRoleFromPlayer(String playerName) {
+        var roleRemovedFromPlayer = RolesJsonUtil.removeRoleFromPlayer(playerName);
 
         if (!roleRemovedFromPlayer) {
             return false;
         }
 
-        player.setPlayerListName(name);
-        player.setDisplayName(name);
+        var optionalPlayer = getPlayer(playerName);
+
+        if (optionalPlayer.isPresent()) {
+            var player = optionalPlayer.get();
+
+            player.setPlayerListName(playerName);
+            player.setDisplayName(playerName);
+        }
 
         return true;
     }
 
-    private boolean addPlayerToRole(Player player, String role) {
-        var oldName = player.getName();
-        var playerRole = new PlayerRole(oldName, role);
+    private boolean addPlayerToRole(String playerName, String role) {
+        var playerRole = new PlayerRole(playerName, role);
 
         var roleAddedToPlayer = RolesJsonUtil.savePlayerRoleToJson(playerRole);
         if (!roleAddedToPlayer) {
             return false;
         }
+
         var optionalRoleDto = RolesJsonUtil.getRoleFromJson(role);
         if (optionalRoleDto.isEmpty()) {
             return false;
         }
-        var roleDto = optionalRoleDto.get();
-        var newName = roleDto.getColor() + role + " - " + oldName;
 
-        player.setPlayerListName(newName);
-        player.setDisplayName(newName);
+        var roleDto = optionalRoleDto.get();
+        var newName = roleDto.getColor() + role + " - " + playerName;
+
+        var optionalPlayer = getPlayer(playerName);
+
+        if (optionalPlayer.isPresent()) {
+            var player = optionalPlayer.get();
+
+            player.setPlayerListName(newName);
+            player.setDisplayName(newName);
+        }
 
         return true;
     }
@@ -202,19 +251,17 @@ public class RoleCommand implements CommandExecutor {
         return RolesJsonUtil.saveRoleToJson(roleDto);
     }
 
-    private Optional<? extends Player> getPlayer(CommandSender commandSender, String[] arguments) {
-        return commandSender.getServer()
-                .getOnlinePlayers()
-                .stream()
-                .filter(p -> p.getName().equals(arguments[1]))
-                .findFirst();
-    }
-
     private String handleHexaInputAndGetColorString(String argument) {
         if (argument.charAt(0) == '#') {
             return ChatColor.of(argument) + "";
         }
 
         return org.bukkit.ChatColor.valueOf(argument) + "";
+    }
+
+    private Optional<? extends Player> getPlayer(String playerName) {
+        return Bukkit.getServer().getOnlinePlayers().stream()
+                .filter(p -> p.getName().equals(playerName))
+                .findFirst();
     }
 }

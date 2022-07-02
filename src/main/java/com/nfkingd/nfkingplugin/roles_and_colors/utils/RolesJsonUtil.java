@@ -10,7 +10,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class RolesJsonUtil {
 
@@ -156,6 +155,40 @@ public class RolesJsonUtil {
                 .toList();
 
         saveJson(newPlayerList, "player-roles.json");
+
+        return true;
+    }
+
+    public static Optional<String> getPlayerFromRole(String role) {
+        var playerRoles = getPlayerRolesFromJson();
+
+        var optionalPlayerRole = playerRoles.stream()
+                .filter(playerRole -> playerRole.getRole().equals(role))
+                .findFirst();
+
+        if (optionalPlayerRole.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(optionalPlayerRole.get().getPlayerName());
+    }
+
+    public static boolean deleteRole(String role) {
+        var roles = getRolesFromJson();
+
+        var optionalRole = roles.stream()
+                .filter(r -> r.getRole().equals(role))
+                .findFirst();
+
+        if (optionalRole.isEmpty()) {
+            return false;
+        }
+
+        var newRoleList = roles.stream()
+                .filter(r -> !r.getRole().equals(role))
+                .toList();
+
+        saveJson(newRoleList, "roles.json");
 
         return true;
     }

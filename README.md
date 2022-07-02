@@ -25,7 +25,7 @@ You can download this plugin [here](https://www.curseforge.com/minecraft/bukkit-
 **Add role to player:** <br>
 `/role add <name> <role>`
 
-**Remove role from player(WIP):** <br>
+**Remove role from player:** <br>
 `/role rm <name>`
 
 **Set color of your name and chat(WIP):** <br>
